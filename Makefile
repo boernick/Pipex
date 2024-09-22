@@ -10,7 +10,7 @@ PRINTF = $(PRINTF_DIR)/libftprintf.a
 LIBFT_DIR = includes/Libft
 LIBFT = $(LIBFT_DIR)/libft.a
 
-INCLUDES = -I $(PRINTF_DIR) -I $(LIBX_DIR) -I $(LIBFT_DIR)
+INCLUDES = -I $(PRINTF_DIR) -I $(LIBFT_DIR)
 
 all: $(NAME)
 
@@ -25,9 +25,6 @@ $(LIBFT):
 
 $(PRINTF): $(LIBFT)
 	make -C $(PRINTF_DIR)
-
-$(LIBX):
-	make -C $(LIBX_DIR)
 
 clean:
 	rm -f $(OBJS)
