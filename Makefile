@@ -1,7 +1,7 @@
 NAME = pipex
 CC = cc
 CFLAGS = -Wall -Wextra -Werror
-SRCS = 
+SRCS = pipex_utils.c pipex.c
 OBJS = $(SRCS:.c=.o)
 HEADER = pipex.h
 
@@ -14,7 +14,7 @@ INCLUDES = -I $(PRINTF_DIR) -I $(LIBFT_DIR)
 
 all: $(NAME)
 
-$(NAME): $(OBJS) $(PRINTF) $(LIBFT) $(LIBX)
+$(NAME): $(OBJS) $(PRINTF) $(LIBFT)
 	$(CC) $(CFLAGS) $(INCLUDES) $(OBJS) $(PRINTF) $(LIBFT) -o $(NAME)
 
 %.o: %.c $(HEADER)
