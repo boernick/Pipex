@@ -6,7 +6,7 @@
 /*   By: nick <nick@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/26 16:11:43 by nboer             #+#    #+#             */
-/*   Updated: 2024/10/07 17:00:06 by nick             ###   ########.fr       */
+/*   Updated: 2024/10/08 22:50:09 by nick             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 int	str_error(char *error)
 {
 	write(2, error, ft_strlen(error));
-	exit(1);
+	exit(2);
 }
 
 void	free_array(char **array)
@@ -29,4 +29,5 @@ void	free_array(char **array)
 		i++;
 	}
 	free(array);
+	ft_putstr_fd("array freed", 2);
 }
