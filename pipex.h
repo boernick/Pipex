@@ -6,7 +6,7 @@
 /*   By: nboer <nboer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/22 18:41:06 by nboer             #+#    #+#             */
-/*   Updated: 2024/10/13 11:06:55 by nboer            ###   ########.fr       */
+/*   Updated: 2024/10/13 15:25:34 by nboer            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,5 +26,7 @@
 
 int		str_error(char *error);
 void	free_array(char **array);
+char	*path_join(char *path_split, char *cmd_arg);
+void	run_ex(char *arg, char **path_env);
 
 #endif
