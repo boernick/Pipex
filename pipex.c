@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipex.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nick <nick@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: nboer <nboer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/22 18:40:48 by nboer             #+#    #+#             */
-/*   Updated: 2024/10/12 20:12:34 by nick             ###   ########.fr       */
+/*   Updated: 2024/10/13 11:09:24 by nboer            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ void	run_ex(char *arg, char **path_env)
 	cmd_arg = ft_split(arg, ' ');
 	path_split = ft_split(path_env[i] + 5, ':');
 	i = 0;
-	while (path_split[i])
+	while (path_split[i++])
 	{
 		temp = ft_strjoin(path_split[i], "/");
 		check_path = ft_strjoin(temp, cmd_arg[0]);
@@ -35,7 +35,6 @@ void	run_ex(char *arg, char **path_env)
 			if (execve(check_path, cmd_arg, path_env) == -1)
 				str_error("exec error");
 		free(check_path);
-		i++;
 	}
 	free_array(cmd_arg);
 	free_array(path_split);
@@ -45,7 +44,7 @@ void	run_ex(char *arg, char **path_env)
 int	first_child(char **arg, int *fd1, char **path_env)
 {
 	int		fileread;
-	
+
 	fileread = open(arg[1], O_RDONLY, 0777);
 	if (fileread < 0)
 		str_error("Could not open filein");
@@ -83,7 +82,7 @@ int	main(int argc, char **argv, char **env)
 		if (pid[0] < 0)
 			str_error("FORK ERROR");
 		if (pid[0] == 0)
-			first_child(argv, fd1, env);	
+			first_child(argv, fd1, env);
 		waitpid(pid[0], NULL, 0);
 		pid[1] = fork();
 		if (pid[1] < 0)
