@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   pipex_bonus.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nboer <nboer@student.42.fr>                +#+  +:+       +#+        */
+/*   By: nick <nick@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/13 16:15:54 by nboer             #+#    #+#             */
-/*   Updated: 2024/10/16 20:34:02 by nboer            ###   ########.fr       */
+/*   Updated: 2024/10/18 00:45:04 by nick             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "pipex.h"
+#include "pipex_bonus.h"
 
 void	create_pipe(char *arg, char **path_env)
 {
@@ -50,9 +50,11 @@ int	handle_file(char *filename, int type)
 	return (fd);
 }
 
+// the heredoc function should be able to take in user input of several lines after a delimiter has been written in user input.
 void	heredoc(char **argv, char **env)
 {
-	char*	heredoc;
+	ft_printf("%s", argv[1]);
+	ft_printf("\n%s", env[0])
 
 }
 
