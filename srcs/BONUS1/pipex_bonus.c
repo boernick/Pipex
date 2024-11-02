@@ -6,7 +6,7 @@
 /*   By: nick <nick@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/13 16:15:54 by nboer             #+#    #+#             */
-/*   Updated: 2024/10/18 00:45:04 by nick             ###   ########.fr       */
+/*   Updated: 2024/11/02 21:24:46 by nick             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@ int	handle_file(char *filename, int type)
 {
 	int	fd;
 
+	fd = 0;
 	if (type = 0)
 		fd = open(filename, O_RDONLY | 0777);
 	if (type == 1)
@@ -55,7 +56,6 @@ void	heredoc(char **argv, char **env)
 {
 	ft_printf("%s", argv[1]);
 	ft_printf("\n%s", env[0])
-
 }
 
 
@@ -66,7 +66,7 @@ int	main(int argc, char **argv, char **env)
 
 	if (argc >= 5)
 	{
-		if (ft_strncmp("here_doc", argv[1], 8) == 0)
+		if (ft_strncmp("here_doc", argv[1], 8) == 0) //if case redirect = true
 		{	
 			if (argc < 6) 
 				str_error("too little args"); //voor >> want: ./pipex here_doc LIMITER cmd cmd1 file zijn 6 args
