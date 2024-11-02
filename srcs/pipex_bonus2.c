@@ -6,7 +6,7 @@
 /*   By: nick <nick@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/02 22:09:22 by nick              #+#    #+#             */
-/*   Updated: 2024/11/02 23:18:32 by nick             ###   ########.fr       */
+/*   Updated: 2024/11/02 23:26:41 by nick             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,13 +56,14 @@ int	main(int argc, char **argv, char **env)
 		while (i < p_ex->n_cmds)
 		{	
 			fork_child()
-			get_fds()
+			get_fd()
 				if (isbuiltin)
 					run_builtin()
 				else
-					run_cmd();
-		clean_pipes()
-		wait_pid()
+					run_ex();
+			clean_pipes();
+			wait_pid();
+		}
 	}
 	else
 		ft_putstr_fd("input error. Use: ./pipex file1 cmd1 cmd2 file2\n", 2);
