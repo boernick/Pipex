@@ -1,18 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   pipex_bonus2_utils.c                               :+:      :+:    :+:   */
+/*   pipex_utils_new.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nboer <nboer@student.42.fr>                +#+  +:+       +#+        */
+/*   By: nick <nick@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/02 22:06:35 by nick              #+#    #+#             */
-/*   Updated: 2024/11/03 18:46:19 by nboer            ###   ########.fr       */
+/*   Updated: 2024/11/03 22:01:07 by nick             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "pipex_bonus2.h"
-
-#include "pipex.h"
+#include "pipex_new.h"
 
 char	*path_join(char *path_split, char *cmd_arg)
 {
@@ -41,6 +39,8 @@ void	run_ex(char *arg, char **path_env)
 	while (path_split[i])
 	{
 		check_path = path_join(path_split[i], cmd_arg[0]);
+		ft_putstr_fd(check_path, 2);
+		ft_putstr_fd("\n", 2);
 		if (!(access(check_path, F_OK)))
 			if (execve(check_path, cmd_arg, path_env) == -1)
 				str_error("exec error");
