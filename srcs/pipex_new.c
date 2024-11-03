@@ -6,7 +6,7 @@
 /*   By: nick <nick@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/02 22:09:22 by nick              #+#    #+#             */
-/*   Updated: 2024/11/03 22:27:30 by nick             ###   ########.fr       */
+/*   Updated: 2024/11/03 22:41:43 by nick             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,6 +103,7 @@ void	get_fd(t_execution *pipex)
 			dup2(pipex->infile, STDIN_FILENO);								// redirect reading from STDIN to reading from input file.
 		else
 			dup2(pipex->pipe_arr[pipex->index_pipe][0], STDIN_FILENO); 		// case any other
+		close(pipex->pipe_arr[pipex->index_pipe][1]);  						// Close write end of the current pipe
 	}
 	if (pipex->pid == 0)												// case child
 	{
@@ -110,6 +111,7 @@ void	get_fd(t_execution *pipex)
 			dup2(pipex->outfile, STDOUT_FILENO);
 		else
 			dup2(pipex->pipe_arr[pipex->index_pipe][1], STDOUT_FILENO);
+		close(pipex->pipe_arr[pipex->index_pipe][0]);  						// Close read end of current pipe
 	}
 }
 
@@ -124,10 +126,8 @@ void	clean_pipes(t_execution *pipex)
 	{
 		close(pipex->pipe_arr[i][0]);
 		close(pipex->pipe_arr[i][1]);
-		free(pipex->pipe_arr[i]);
 		i++;
 	}
-	free(pipex->pipe_arr);
 }
 
 int	is_builtin(t_execution *pipex)
@@ -169,8 +169,8 @@ int	main(int argc, char **argv, char **env)
 			pipex.index_cmd++;
 		}
 		ft_putstr_fd("parent waiting....\n", 2);
-		waitpid(pipex.pid, NULL, 0); // wait for child process, but WHY these inputs in function?
 		clean_pipes(&pipex);
+		waitpid(pipex.pid, NULL, 0); // wait for child process, but WHY these inputs in function?
 	}
 	return (0);
 }
