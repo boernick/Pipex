@@ -6,7 +6,7 @@
 /*   By: nick <nick@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/02 22:09:22 by nick              #+#    #+#             */
-/*   Updated: 2024/11/04 23:21:59 by nick             ###   ########.fr       */
+/*   Updated: 2024/11/05 00:11:13 by nick             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,10 +35,12 @@ void	exec_init(t_execution *pipex, int argc, char **argv)
 	ft_putstr_fd("setting outfile\n", 2);
 	pipex->outfile = handle_file(argv[argc - 1], 1);
 	pipex->n_cmds = argc - 3;
-	pipex->n_pipes = pipex->n_cmds + 1;
-	pipex->index_pipe = 0;
+	pipex->n_pipes = pipex->n_cmds - 1;
+	pipex->index_pipe = -1;
 	pipex->index_cmd = 0;
 	pipex->index_prev_pipe = -1;
+	ft_printf("number of pipes: %i\n", pipex->n_pipes);
+	ft_printf("number of cmd: %i\n", pipex->n_cmds);
 }
 // prepare exec struct for next call
 void	update_exec(t_execution *pipex)
@@ -62,6 +64,7 @@ void	create_pipes(t_execution *pipex)
 	i = 0;
 	while (i < pipex->n_pipes)
 	{
+		ft_printf("make pipe %i\n", i);
 		if (!(pipex->pipe_arr[i] = (int *) malloc(sizeof(int) * 2)))
 		{
 			free_int_array(pipex, i + 1);
@@ -101,7 +104,7 @@ void	get_fd(t_execution *pipex)
 {
 	if (pipex->pid == 0)
 	{
-		if (pipex->index_cmd == 0)
+		if (pipex->index_pipe== -1) // for the first case
 		{
 			ft_putstr_fd("dupe reading from STDIN", pipex->fd2);
 			dup2(pipex->infile, STDIN_FILENO);
@@ -112,7 +115,7 @@ void	get_fd(t_execution *pipex)
 			ft_putnbr_fd(pipex->index_prev_pipe, pipex->fd3);
 			dup2(pipex->pipe_arr[pipex->index_prev_pipe][0], STDIN_FILENO);
 		}
-		if (pipex->index_cmd == pipex->n_cmds - 1)
+		if (pipex->index_pipe == pipex->n_pipes - 1)
 		{
 			ft_putstr_fd("\ndupe writing in outfile", pipex->fd3);
 			dup2(pipex->outfile, STDOUT_FILENO);
