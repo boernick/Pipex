@@ -1,2 +1,0 @@
-dupe reading from STDIN
-dupe writing into index: -1
