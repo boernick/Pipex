@@ -6,7 +6,7 @@
 /*   By: nick <nick@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/02 22:09:22 by nick              #+#    #+#             */
-/*   Updated: 2024/11/03 22:41:43 by nick             ###   ########.fr       */
+/*   Updated: 2024/11/04 23:21:59 by nick             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,14 +34,16 @@ void	exec_init(t_execution *pipex, int argc, char **argv)
 	pipex->infile = handle_file(argv[1], 0); // TO-DO BUT ONLY IF THE FIRST ARGUMENT IS A FILE!
 	ft_putstr_fd("setting outfile\n", 2);
 	pipex->outfile = handle_file(argv[argc - 1], 1);
-	pipex->n_cmds = argc - 2;
-	pipex->n_pipes = argc - 3;
+	pipex->n_cmds = argc - 3;
+	pipex->n_pipes = pipex->n_cmds + 1;
 	pipex->index_pipe = 0;
 	pipex->index_cmd = 0;
+	pipex->index_prev_pipe = -1;
 }
 // prepare exec struct for next call
 void	update_exec(t_execution *pipex)
 {
+	pipex->index_prev_pipe = pipex->index_pipe;
 	pipex->index_pipe++;
 	pipex->index_cmd++;
 }
@@ -49,7 +51,7 @@ void	update_exec(t_execution *pipex)
 // create an array of pointers to integers to store the total amount of pipes.
 void	create_pipes(t_execution *pipex)
 {
-	ft_putstr_fd("creating pipes\n", 2);
+	ft_putstr_fd("creating pipes\n", pipex->fd1);
 
 	int		i;
 
@@ -97,22 +99,34 @@ void	fork_child(t_execution *pipex)
 
 void	get_fd(t_execution *pipex)
 {
-	if (pipex->pid > 0) 												// case parent
+	if (pipex->pid == 0)
 	{
-		if (pipex->index_cmd == 0)										// case first command
-			dup2(pipex->infile, STDIN_FILENO);								// redirect reading from STDIN to reading from input file.
-		else
-			dup2(pipex->pipe_arr[pipex->index_pipe][0], STDIN_FILENO); 		// case any other
-		close(pipex->pipe_arr[pipex->index_pipe][1]);  						// Close write end of the current pipe
-	}
-	if (pipex->pid == 0)												// case child
-	{
-		if (pipex->index_cmd == pipex->n_cmds)
+		if (pipex->index_cmd == 0)
+		{
+			ft_putstr_fd("dupe reading from STDIN", pipex->fd2);
+			dup2(pipex->infile, STDIN_FILENO);
+		}
+		else 
+		{
+			ft_putstr_fd("dupe reading from index: ", pipex->fd3);
+			ft_putnbr_fd(pipex->index_prev_pipe, pipex->fd3);
+			dup2(pipex->pipe_arr[pipex->index_prev_pipe][0], STDIN_FILENO);
+		}
+		if (pipex->index_cmd == pipex->n_cmds - 1)
+		{
+			ft_putstr_fd("\ndupe writing in outfile", pipex->fd3);
 			dup2(pipex->outfile, STDOUT_FILENO);
+		}
 		else
+		{
+			ft_putstr_fd("\ndupe writing into index: ", pipex->fd2);
+			ft_putnbr_fd(pipex->index_pipe, pipex->fd2);
 			dup2(pipex->pipe_arr[pipex->index_pipe][1], STDOUT_FILENO);
-		close(pipex->pipe_arr[pipex->index_pipe][0]);  						// Close read end of current pipe
+		}
+		clean_pipes(pipex);
 	}
+	else
+		return;
 }
 
 void	clean_pipes(t_execution *pipex)
@@ -128,6 +142,13 @@ void	clean_pipes(t_execution *pipex)
 		close(pipex->pipe_arr[i][1]);
 		i++;
 	}
+	if (pipex->infile)
+		close(pipex->infile);
+	if (pipex->outfile)
+		close(pipex->outfile);
+	close(pipex->fd1); //DEBUG
+	close(pipex->fd2); //DEBUG
+	close(pipex->fd3); //DEBUG
 }
 
 int	is_builtin(t_execution *pipex)
@@ -144,7 +165,11 @@ int	run_builtin(t_execution *pipex)
 
 int	main(int argc, char **argv, char **env)
 {
-	t_execution	pipex;
+	t_execution	pipex; 
+	
+	pipex.fd1 = open("error_log1.txt", O_WRONLY | O_CREAT | O_TRUNC, 0644); //DEBUG
+	pipex.fd2 = open("error_log2.txt", O_WRONLY | O_CREAT | O_TRUNC, 0644); //DEBUG
+	pipex.fd3 = open("error_log3.txt", O_WRONLY | O_CREAT | O_TRUNC, 0644); //DEBUG
 	
 	if (argc < 5)
 		str_error("input error. Use: ./pipex file1 cmd1 cmd2 file2\n");
@@ -152,25 +177,26 @@ int	main(int argc, char **argv, char **env)
 	{
 		exec_init(&pipex, argc, argv); // tellen hoeveel cmd args er zijn en het opslaan in struct
 		create_pipes(&pipex); 
-		while (pipex.index_cmd <= pipex.n_cmds)
+		while (pipex.index_cmd < pipex.n_cmds)
 		{	
-			get_fd(&pipex);
 			fork_child(&pipex);
+			get_fd(&pipex);
 			if (pipex.pid == 0)
 			{
-				if (is_builtin(&pipex))
-					run_builtin(&pipex);
-				else
-					run_ex(argv[pipex.index_cmd + 2], env);
+				// if (is_builtin(&pipex))
+				// 	run_builtin(&pipex);
+				// else
+				ft_putstr_fd("\nfind command", pipex.fd2);
+				ft_putstr_fd(argv[pipex.index_cmd + 2], pipex.fd2);
+				run_ex(argv[pipex.index_cmd + 2], env);
 				exit(EXIT_SUCCESS);
 			}
 			else
 				update_exec(&pipex);
-			pipex.index_cmd++;
 		}
-		ft_putstr_fd("parent waiting....\n", 2);
-		clean_pipes(&pipex);
+		ft_putstr_fd("parent waiting....\n", pipex.fd1);
 		waitpid(pipex.pid, NULL, 0); // wait for child process, but WHY these inputs in function?
+		clean_pipes(&pipex);
 	}
 	return (0);
 }

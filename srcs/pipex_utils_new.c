@@ -6,7 +6,7 @@
 /*   By: nick <nick@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/02 22:06:35 by nick              #+#    #+#             */
-/*   Updated: 2024/11/03 22:01:07 by nick             ###   ########.fr       */
+/*   Updated: 2024/11/04 22:53:47 by nick             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ void	run_ex(char *arg, char **path_env)
 	char	**cmd_arg;
 
 	i = 0;
-	while (!(ft_strnstr(path_env[i], "PATH", 4)))
+	while (path_env[i] && ft_strncmp(path_env[i], "PATH=", 5) != 0)
 		i++;
 	cmd_arg = ft_split(arg, ' ');
 	path_split = ft_split(path_env[i] + 5, ':');
@@ -49,7 +49,7 @@ void	run_ex(char *arg, char **path_env)
 	}
 	free_array(cmd_arg);
 	free_array(path_split);
-	str_error("cmd not found");
+	str_error("cmd not found\n");
 }
 
 int	str_error(char *error)

@@ -6,7 +6,7 @@
 /*   By: nick <nick@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/02 22:07:34 by nick              #+#    #+#             */
-/*   Updated: 2024/11/03 21:43:30 by nick             ###   ########.fr       */
+/*   Updated: 2024/11/04 22:52:56 by nick             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,12 +26,16 @@ typedef struct	s_execution
 {
 	pid_t	pid; //process ID to check if its child or not
 	int		n_pipes; // to know when i reach the last pipe
-	int		index_pipe; // to track which FD's i need to open/close
+	int		index_pipe; // to track the pipe where to write in
+	int		index_prev_pipe; // to track the pipe where to read from
 	int		**pipe_arr;
 	int		n_cmds; // to know how often i need to fork
 	int		index_cmd;
 	int		infile; //first file to read from
 	int		outfile; // file to output
+	int		fd1; //DEBUG
+	int		fd2; //DEBUG
+	int		fd3; //DEBUG
 
 } t_execution;
 
