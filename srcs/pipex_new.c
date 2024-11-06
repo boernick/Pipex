@@ -6,7 +6,7 @@
 /*   By: nboer <nboer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/02 22:09:22 by nick              #+#    #+#             */
-/*   Updated: 2024/11/06 13:46:47 by nboer            ###   ########.fr       */
+/*   Updated: 2024/11/06 16:38:46 by nboer            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,11 @@ int	handle_file(char *filename, int type)
 		fd = open(filename, O_WRONLY | O_CREAT |O_APPEND, 0644);
 	else
 		str_error("wrong type argument to handle file\n");
+	if (fd == -1)
+	{
+		str_error("Cannot open file");
+		exit(1);
+	}
 	return (fd);
 }
 // prepare exec struct for use
@@ -94,44 +99,41 @@ void	free_int_array(t_execution *pipex, int	i)
 	free(array);
 }
 // fork a child process and return error if PID is false
-void	fork_child(t_execution *pipex)
+pid_t	fork_child(void)
 {
+	pid_t	pid;
 	ft_putstr_fd("forking child\n", 2);
-	pipex->pid = fork();
-	if (pipex->pid < 0)
+	pid = fork();
+	if (pid < 0)
 		str_error("Error: false PID");
+	return (pid);
 }
 
 void	get_fd(t_execution *pipex)
 {
-	if (pipex->pid == 0)
+	if (pipex->index_pipe == 0) // for the first case
 	{
-		if (pipex->index_pipe == 0) // for the first case
-		{
-			ft_putstr_fd("dupe reading from STDIN", 2);
-			dup2(pipex->infile, STDIN_FILENO);
-		}
-		else 
-		{
-			ft_putstr_fd("dupe reading from index: ", 2);
-			ft_putnbr_fd(pipex->index_prev_pipe, 2);
-			dup2(pipex->pipe_arr[pipex->index_prev_pipe][0], STDIN_FILENO);
-		}
-		if (pipex->index_cmd == pipex->n_cmds - 1)
-		{
-			ft_putstr_fd("\ndupe writing in outfile\n", 2);
-			dup2(pipex->outfile, STDOUT_FILENO);
-		}
-		else
-		{
-			ft_putstr_fd("\ndupe writing into index: ", 2);
-			ft_putnbr_fd(pipex->index_pipe, 2);
-			ft_putstr_fd("\n", 2);
-			dup2(pipex->pipe_arr[pipex->index_pipe][1], STDOUT_FILENO);
-		}
+		ft_putstr_fd("dupe reading from STDIN", 2);
+		dup2(pipex->infile, STDIN_FILENO);
+	}
+	else 
+	{
+		ft_putstr_fd("dupe reading from index: ", 2);
+		ft_putnbr_fd(pipex->index_prev_pipe, 2);
+		dup2(pipex->pipe_arr[pipex->index_prev_pipe][0], STDIN_FILENO);
+	}
+	if (pipex->index_cmd == pipex->n_cmds - 1)
+	{
+		ft_putstr_fd("\ndupe writing in outfile\n", 2);
+		dup2(pipex->outfile, STDOUT_FILENO);
 	}
 	else
-		return;
+	{
+		ft_putstr_fd("\ndupe writing into index: ", 2);
+		ft_putnbr_fd(pipex->index_pipe, 2);
+		ft_putstr_fd("\n", 2);
+		dup2(pipex->pipe_arr[pipex->index_pipe][1], STDOUT_FILENO);
+	}
 }
 
 void	clean_pipes(t_execution *pipex)
@@ -165,37 +167,41 @@ int	run_builtin(t_execution *pipex)
 	return (0);
 }
 
-void waitpids(int n)
+void waitpids(pid_t *pids, int n)
 {
 	int	i;
 	
 	i = 0;
 	while (i < n)
 	{
-		waitpid(-1, NULL, 0);
+		waitpid(pids[i], NULL, 0);
 		i++;
 	}
 }
 
 int	main(int argc, char **argv, char **env)
 {
-	t_execution	pipex; 
+	t_execution	pipex;
+	pid_t		*pids;
+	int			i;
 	
 	if (argc < 5)
 		str_error("input error. Use: ./pipex file1 cmd1 cmd2 file2\n");
 	else 
 	{
 		exec_init(&pipex, argc, argv); // tellen hoeveel cmd args er zijn en het opslaan in struct
-		create_pipes(&pipex); 
+		create_pipes(&pipex);
+		pids = malloc(pipex.n_cmds * sizeof(pid_t));
+		i = 0;
 		while (pipex.index_cmd < pipex.n_cmds)
 		{	
-			fork_child(&pipex);
-			get_fd(&pipex);
-			if (pipex.pid == 0) //case child
+			pids[i] = fork_child();
+			if (pids[i++] == 0) //case child
 			{
 				// if (is_builtin(&pipex))
 				// 	run_builtin(&pipex);
 				// else
+				get_fd(&pipex);
 				clean_pipes(&pipex);
 				run_ex(argv[pipex.index_cmd + 2], env);
 				exit(EXIT_SUCCESS);
@@ -203,9 +209,9 @@ int	main(int argc, char **argv, char **env)
 			else
 				update_exec(&pipex);
 		}
-		ft_putstr_fd("parent waiting....\n", pipex.fd1);
-		waitpids(pipex.n_cmds); // wait for child process, but WHY these inputs in function?
+		ft_putstr_fd("parent waiting....\n", 2);
 		clean_pipes(&pipex);
+		waitpids(pids, pipex.n_cmds); // wait for child process, but WHY these inputs in function?
 	}
 	return (0);
 }

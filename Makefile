@@ -21,7 +21,7 @@ all: $(NAME)
 $(NAME): $(OBJS) $(PRINTF) $(LIBFT)
 	$(CC) $(CFLAGS) $(INCLUDES) $(OBJS) $(PRINTF) $(LIBFT) -o $(NAME)
 
-%.o: %.c $(HEADER)
+%.o: %.c
 	$(CC) $(CFLAGS) $(INCLUDES) -g -c $< -o $@
 
 $(LIBFT): 
@@ -34,9 +34,6 @@ new: $(NAME_NEW)
 
 $(NAME_NEW): $(OBJS_NEW) $(PRINTF) $(LIBFT)
 	$(CC) $(CFLAGS) $(INCLUDES) $(OBJS_NEW) $(PRINTF) $(LIBFT) -o $(NAME_NEW)
-
-%.o: %.c $(HEADER_NEW)
-	$(CC) $(CFLAGS) $(INCLUDES) -g -c $< -o $@
 
 clean:
 	rm -f $(OBJS)

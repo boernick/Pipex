@@ -1,13 +1,13 @@
 {
     "configurations": [
         {
-            "name": "C/C++: gcc build and debug active file",
+            "name": "C/C++: make fclean new build and debug active file",
             "type": "cppdbg",
             "request": "launch",
-            "program": "pipex",
-            "args": ["txtin.txt", "cat", "cat", "txtout.txt"],
+            "program": "${workspaceFolder}/pipex_new",
+            "args": ["in.txt", "cat", "cat", "out.txt"],
             "stopAtEntry": false,
-            "cwd": "${fileDirname}",
+            "cwd": "${workspaceFolder}",
             "environment": [],
             "externalConsole": false,
             "MIMode": "gdb",
@@ -24,7 +24,7 @@
                 }
             ],
             "preLaunchTask": "C/C++: gcc build active file",
-            "miDebuggerPath": "/usr/bin/gdb"
+            "miDebuggerPath": "gdb"
         }
     ],
     "version": "2.0.0"

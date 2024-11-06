@@ -6,7 +6,7 @@
 /*   By: nboer <nboer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/02 22:07:34 by nick              #+#    #+#             */
-/*   Updated: 2024/11/06 13:14:49 by nboer            ###   ########.fr       */
+/*   Updated: 2024/11/06 16:17:53 by nboer            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,10 +33,6 @@ typedef struct	s_execution
 	int		index_cmd;
 	int		infile; //first file to read from
 	int		outfile; // file to output
-	int		fd1; //DEBUG
-	int		fd2; //DEBUG
-	int		fd3; //DEBUG
-
 } t_execution;
 
 char	*path_join(char *path_split, char *cmd_arg);
@@ -48,11 +44,11 @@ void	exec_init(t_execution *pipex, int argc, char **argv);
 void	update_exec(t_execution *pipex);
 void	create_pipes(t_execution *pipex);
 void	free_int_array(t_execution *pipex, int i);
-void	fork_child(t_execution *pipex);
+pid_t	fork_child(void);
 void	get_fd(t_execution *pipex);
 void	clean_pipes(t_execution *pipex);
 int		is_builtin(t_execution *pipex);
 int		run_builtin(t_execution *pipex);
-void	waitpids(int n);
+void	waitpids(pid_t *pids, int n);
 
 #endif
