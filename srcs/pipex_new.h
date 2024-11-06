@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipex_new.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nick <nick@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: nboer <nboer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/02 22:07:34 by nick              #+#    #+#             */
-/*   Updated: 2024/11/04 22:52:56 by nick             ###   ########.fr       */
+/*   Updated: 2024/11/06 13:14:49 by nboer            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,5 +53,6 @@ void	get_fd(t_execution *pipex);
 void	clean_pipes(t_execution *pipex);
 int		is_builtin(t_execution *pipex);
 int		run_builtin(t_execution *pipex);
+void	waitpids(int n);
 
 #endif
