@@ -6,7 +6,7 @@
 /*   By: nboer <nboer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/02 22:09:22 by nick              #+#    #+#             */
-/*   Updated: 2024/11/06 16:41:51 by nboer            ###   ########.fr       */
+/*   Updated: 2024/11/06 18:28:08 by nboer            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -180,18 +180,22 @@ int	main(int argc, char **argv, char **env)
 			pids[i] = fork_child();
 			if (pids[i++] == 0) //case child
 			{
-				// if (is_builtin(&pipex))
-				// 	run_builtin(&pipex);
-				// else
-				get_fd(&pipex);
-				clean_pipes(&pipex);
-				run_ex(argv[pipex.index_cmd + 2], env);
-				exit(EXIT_SUCCESS);
+				if (is_builtin(&pipex))
+				{
+					run_builtin(&pipex);
+					exit(EXIT_SUCCESS); //can be removed later, just safety not to get infinite loop
+				}	
+				else
+				{
+					get_fd(&pipex);
+					clean_pipes(&pipex);
+					run_ex(argv[pipex.index_cmd + 2], env);
+					exit(EXIT_SUCCESS);
+				}
 			}
 			else
 				update_exec(&pipex);
 		}
-		ft_putstr_fd("parent waiting....\n", 2);
 		clean_pipes(&pipex);
 		waitpids(pids, pipex.n_cmds); // wait for child process, but WHY these inputs in function?
 	}

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipex_utils_new.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nick <nick@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: nboer <nboer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/02 22:06:35 by nick              #+#    #+#             */
-/*   Updated: 2024/11/04 22:53:47 by nick             ###   ########.fr       */
+/*   Updated: 2024/11/06 17:53:57 by nboer            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,20 @@ char	*path_join(char *path_split, char *cmd_arg)
 	return (joined_path);
 }
 
+// Search through bin folder (NOW LINKED LIST) which dir contains PATH environment variable, 
+// skips "PATH" in the string and returns it.
+char	*get_path_env(char **path_env)
+{
+	int i = 0;
+	while (path_env[i]) // TO DO THIS WILL BECOME LINKED LIST
+	{
+		if (!(ft_strncmp(path_env[i], "PATH=", 5)))
+			return (path_env[i] + 5); 
+		i++;
+	}
+	return (NULL);
+}
+
 void	run_ex(char *arg, char **path_env)
 {
 	int		i;
@@ -30,17 +44,14 @@ void	run_ex(char *arg, char **path_env)
 	char	*check_path;
 	char	**cmd_arg;
 
-	i = 0;
-	while (path_env[i] && ft_strncmp(path_env[i], "PATH=", 5) != 0)
-		i++;
+	path_split = ft_split(get_path_env(path_env), ':');
+	// if (!pathsplit)
 	cmd_arg = ft_split(arg, ' ');
-	path_split = ft_split(path_env[i] + 5, ':');
+	// if (!cmd_arg)!!
 	i = 0;
 	while (path_split[i])
 	{
 		check_path = path_join(path_split[i], cmd_arg[0]);
-		ft_putstr_fd(check_path, 2);
-		ft_putstr_fd("\n", 2);
 		if (!(access(check_path, F_OK)))
 			if (execve(check_path, cmd_arg, path_env) == -1)
 				str_error("exec error");

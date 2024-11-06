@@ -6,7 +6,7 @@
 /*   By: nboer <nboer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/02 22:07:34 by nick              #+#    #+#             */
-/*   Updated: 2024/11/06 16:17:53 by nboer            ###   ########.fr       */
+/*   Updated: 2024/11/06 17:54:18 by nboer            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,5 +50,7 @@ void	clean_pipes(t_execution *pipex);
 int		is_builtin(t_execution *pipex);
 int		run_builtin(t_execution *pipex);
 void	waitpids(pid_t *pids, int n);
+char	*get_path_env(char **path_env);
+
 
 #endif
