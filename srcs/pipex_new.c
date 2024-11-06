@@ -6,7 +6,7 @@
 /*   By: nboer <nboer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/02 22:09:22 by nick              #+#    #+#             */
-/*   Updated: 2024/11/06 16:38:46 by nboer            ###   ########.fr       */
+/*   Updated: 2024/11/06 16:41:51 by nboer            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,17 +35,13 @@ int	handle_file(char *filename, int type)
 // prepare exec struct for use
 void	exec_init(t_execution *pipex, int argc, char **argv)
 {
-	ft_putstr_fd("setting infile\n", 2);
 	pipex->infile = handle_file(argv[1], 0); // TO-DO BUT ONLY IF THE FIRST ARGUMENT IS A FILE!
-	ft_putstr_fd("setting outfile\n", 2);
 	pipex->outfile = handle_file(argv[argc - 1], 1);
 	pipex->n_cmds = argc - 3;
 	pipex->n_pipes = pipex->n_cmds - 1;
 	pipex->index_pipe = 0;
 	pipex->index_cmd = 0;
 	pipex->index_prev_pipe = -1;
-	ft_printf("number of pipes: %i\n", pipex->n_pipes);
-	ft_printf("number of cmd: %i\n", pipex->n_cmds);
 }
 // prepare exec struct for next call
 void	update_exec(t_execution *pipex)
@@ -102,7 +98,7 @@ void	free_int_array(t_execution *pipex, int	i)
 pid_t	fork_child(void)
 {
 	pid_t	pid;
-	ft_putstr_fd("forking child\n", 2);
+	
 	pid = fork();
 	if (pid < 0)
 		str_error("Error: false PID");
@@ -112,28 +108,14 @@ pid_t	fork_child(void)
 void	get_fd(t_execution *pipex)
 {
 	if (pipex->index_pipe == 0) // for the first case
-	{
-		ft_putstr_fd("dupe reading from STDIN", 2);
 		dup2(pipex->infile, STDIN_FILENO);
-	}
 	else 
-	{
-		ft_putstr_fd("dupe reading from index: ", 2);
-		ft_putnbr_fd(pipex->index_prev_pipe, 2);
 		dup2(pipex->pipe_arr[pipex->index_prev_pipe][0], STDIN_FILENO);
-	}
 	if (pipex->index_cmd == pipex->n_cmds - 1)
-	{
-		ft_putstr_fd("\ndupe writing in outfile\n", 2);
 		dup2(pipex->outfile, STDOUT_FILENO);
-	}
 	else
-	{
-		ft_putstr_fd("\ndupe writing into index: ", 2);
-		ft_putnbr_fd(pipex->index_pipe, 2);
-		ft_putstr_fd("\n", 2);
 		dup2(pipex->pipe_arr[pipex->index_pipe][1], STDOUT_FILENO);
-	}
+
 }
 
 void	clean_pipes(t_execution *pipex)
@@ -167,7 +149,7 @@ int	run_builtin(t_execution *pipex)
 	return (0);
 }
 
-void waitpids(pid_t *pids, int n)
+void	waitpids(pid_t *pids, int n)
 {
 	int	i;
 	
